@@ -1,86 +1,75 @@
-Flutter Login & Signup with Firebase (task_login)
+# Flutter Login & Signup with Firebase (task_login)
 
-A Flutter app demonstrating Login & Signup screens with Firebase Authentication and Firestore integration, proper form validations, password strength checks, and navigation between screens.
+A Flutter app demonstrating Login & Signup screens with **Firebase Authentication** and **Firestore** integration, proper form validations, password strength checks, and navigation between screens.
 
-Project Description
+---
+
+## Project Description
 
 This Flutter application allows users to:
 
-Login with Email & Password (only if previously signed up)
+* **Login** with Email & Password (only if previously signed up)
+* **Signup** with Name, Email, Password, and Confirm Password (new users only)
+* Store user information in **Firestore** under the `users` collection
+* Navigate between Login and Signup screens
+* View form validation errors in real-time
+* See success or error messages via SnackBars
+* Toggle password visibility for security
+* Password fields appear black in screen recordings for privacy
 
-Signup with Name, Email, Password, and Confirm Password (new users only)
+It is designed to demonstrate **Flutter basics, Firebase Auth, Firestore, forms, validation, and UI design**.
 
-Store user information in Firestore under the users collection
+---
 
-Navigate between Login and Signup screens
+## Features
 
-View form validation errors in real-time
+### Login Screen
 
-See success or error messages via SnackBars
+* Email & Password fields with real-time validations
+* Users can login only if email exists in Firebase Auth
 
-Toggle password visibility for security
+### Signup Screen
 
-Password fields appear black in screen recordings for privacy
+* Name, Email, Password, Confirm Password fields with validations
+* Password strength check:
 
-It is designed to test understanding of Flutter basics, Firebase Auth, Firestore, forms, validation, and UI design.
+  * Minimum 8 characters
+  * Uppercase & lowercase letters
+  * Numbers
+  * Special characters
+* New user emails are registered in Firebase Auth and stored in Firestore `users` collection
 
-Features
+### Navigation
 
-Login Screen:
+* Login → Signup
+* Signup → Login
 
-Email & Password fields with real-time validations
+### UI/UX Enhancements
 
-Users can login only if email exists in Firebase Auth
+* Custom InputField widget
+* Password visibility toggle
+* Styled buttons
+* SnackBars for success/error messages
+* Mobile-responsive design
 
-Signup Screen:
+### Error Handling
 
-Name, Email, Password, Confirm Password fields with validations
+* Proper handling of Firebase Auth exceptions
+* Displays user-friendly error messages
 
-Password strength check:
+---
 
-Minimum 8 characters
+## Packages Used
 
-Uppercase & lowercase letters
+* `firebase_core: ^4.2.1`
+* `firebase_auth: ^6.1.2`
+* `cloud_firestore: ^6.1.0`
 
-Numbers
+---
 
-Special characters
+## Project Structure
 
-New user emails are registered in Firebase Auth and stored in Firestore users collection
-
-Navigation:
-
-Login → Signup
-
-Signup → Login
-
-UI/UX Enhancements:
-
-Custom InputField widget
-
-Password visibility toggle
-
-Styled buttons
-
-SnackBars for success/error messages
-
-Mobile-responsive design
-
-Error Handling:
-
-Proper handling of Firebase Auth exceptions
-
-Displays user-friendly error messages
-
-Packages Used
-
-firebase_core: ^4.2.1
-
-firebase_auth: ^6.1.2
-
-cloud_firestore: ^6.1.0
-
-Project Structure
+```
 lib/
 ├── main.dart
 ├── screens/
@@ -91,54 +80,65 @@ lib/
 └── assets/
     ├── login.png
     └── signup.png
-Getting Started
-Prerequisites
+```
 
-Flutter SDK installed
+---
 
-Git installed
+## Getting Started
 
-Firebase project setup (with Android app linked)
+### Prerequisites
 
-Installation
+* Flutter SDK installed
+* Git installed
+* Firebase project setup (with Android app linked)
 
-Clone the repository:
+### Installation
 
+1. **Clone the repository:**
+
+```bash
 git clone https://github.com/AbdulManan-official/flutter-login-signup.git
+```
 
-Navigate to the project folder:
+2. **Navigate to the project folder:**
 
+```bash
 cd flutter-login-signup
+```
 
-Install dependencies:
+3. **Install dependencies:**
 
+```bash
 flutter pub get
+```
 
-Run the app:
+4. **Run the app:**
 
+```bash
 flutter run
-Notes
+```
 
-Tested on Flutter 3.x or above
+---
 
-UI is mobile responsive
+## Notes
 
-Password fields are masked for privacy, especially during recordings
+* Tested on Flutter 3.x or above
+* UI is mobile responsive
+* Password fields are masked for privacy, especially during recordings
+* Firestore stores additional user info during signup
+* Replace images in `assets/` as needed
 
-Firestore stores additional user info during signup
+---
 
-Replace images in assets/ as needed
+## Resources
 
-Resources
+* [Flutter Documentation](https://docs.flutter.dev/)
+* [Flutter Codelabs](https://docs.flutter.dev/get-started/codelab)
+* [Flutter Cookbook](https://docs.flutter.dev/cookbook)
+* [Firebase Flutter Documentation](https://firebase.flutter.dev/)
 
-Flutter Documentation
+---
 
-Flutter Codelabs
-
-Flutter Cookbook
-
-Firebase Flutter Documentation
-
-Hashtags / Tags
+## Hashtags / Tags
 
 #Flutter #Firebase #FirebaseAuth #CloudFirestore #FlutterDev #MobileAppDevelopment #RealTimeLogin #UserAuthentication #FlutterAndroid #AppDevelopment #FirestoreUsers #ErrorHandling #SignUp #FlutterFirebase
