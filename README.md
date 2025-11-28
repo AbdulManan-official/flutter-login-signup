@@ -39,10 +39,13 @@ It is designed to demonstrate **Flutter basics, Firebase Auth, Firestore, forms,
   * Special characters
 * New user emails are registered in Firebase Auth and stored in Firestore `users` collection
 
+* ### Home Screen
+* User naviagtes here after signing in and logging . user can logout from here 
+
 ### Navigation
 
-* Login → Signup
-* Signup → Login
+* Login → Signup → Home
+* Signup → Login → Home
 
 ### UI/UX Enhancements
 
@@ -75,11 +78,14 @@ lib/
 ├── screens/
 │   ├── login_screen.dart
 │   └── signup_screen.dart
+    └── homescreen.dart
 ├── widgets/
 │   └── inputfield.dart
 └── assets/
     ├── login.png
     └── signup.png
+└── services/
+    ├── firebaseservice.png
 ```
 
 ---
