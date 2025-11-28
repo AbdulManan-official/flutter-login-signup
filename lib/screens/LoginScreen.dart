@@ -1,17 +1,66 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/inputfield.dart'; // Ensure correct path
+import '../services/firebase_service.dart';
+import 'HomeScreen.dart'; // Import HomeScreen
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
+
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool isLoading = false; // Add this to manage spinner
+  Future<void> handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    try {
+      final user = await FirebaseService.instance.login(email, password);
+
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login Successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'Login failed';
+      if (e.code == 'user-not-found') errorMessage = 'User not found';
+      if (e.code == 'wrong-password') errorMessage = 'Incorrect password';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
 
   @override
   void dispose() {
@@ -117,29 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            // If all fields are valid, show a success message
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar( // Removed const to allow non-const duration
-                                content: const Text('Login Successful!'),
-                                backgroundColor: Colors.green,
-                                duration: const Duration(seconds: 2), // Set duration to 2 seconds
-                              ),
-                            );
-                            // Here you would typically perform your login logic
-                            // e.g., Navigator.pushReplacementNamed(context, '/home');
-                          } else {
-                            // If validation fails, show a generic error message
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar( // Removed const to allow non-const duration
-                                content: const Text('Please correct the errors in the form.'),
-                                backgroundColor: Colors.red,
-                                duration: const Duration(seconds: 3), // Set duration to 3 seconds for error
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: isLoading ? null : handleLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
@@ -149,10 +176,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           elevation: 5,
                         ),
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(fontSize: 18, fontFamily: 'Montserrat',
+                        child: isLoading
+                            ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
                           ),
+                        )
+                            : const Text(
+                          'Login',
+                          style: TextStyle(fontSize: 18, fontFamily: 'Montserrat'),
                         ),
                       ),
                     ),

@@ -1,11 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/inputfield.dart'; // Ensure correct path
+import '../services/firebase_service.dart';
+import 'package:task_login/screens/HomeScreen.dart';
+
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
+
+
 }
 
 class _SignupScreenState extends State<SignupScreen> {
@@ -14,6 +20,71 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  bool isLoading = false;
+
+  Future<void> handleSignup() async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please correct the errors in the form.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true; // start loading
+    });
+
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final name = nameController.text.trim();
+
+    try {
+      final user = await FirebaseService.instance.signUp(email, password);
+
+      if (user != null) {
+        await FirebaseService.instance.saveUserData(user.uid, {
+          'uid': user.uid,
+          'name': name,
+          'email': email,
+          'createdAt': DateTime.now(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Account created successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'Signup failed';
+      if (e.code == 'email-already-in-use') errorMessage = 'This email is already registered';
+      else if (e.code == 'weak-password') errorMessage = 'Your password is too weak';
+      else if (e.code == 'invalid-email') errorMessage = 'Invalid email format';
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      setState(() {
+        isLoading = false; // stop loading
+      });
+    }
+  }
+
+
 
   @override
   void dispose() {
@@ -147,29 +218,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar( // Removed const
-                                content: const Text('Signup Successful!'),
-                                backgroundColor: Colors.green,
-                                duration: const Duration(seconds: 2), // Set duration
-                              ),
-                            );
-                            // Navigate to login or home after successful signup
-                            // Navigator.pushReplacementNamed(context, '/login');
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar( // Removed const
-                                content: const Text('Please correct the errors in the form.'),
-                                backgroundColor: Colors.red,
-                                duration: const Duration(seconds: 3), // Set duration
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: isLoading ? null : handleSignup, // disable while loading
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red, // Changed to red
+                          backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -177,11 +228,26 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           elevation: 5,
                         ),
-                        child: const Text('Signup', style: TextStyle(fontSize: 18,
-                          fontFamily: 'Montserrat',
-                        )),
+                        child: isLoading
+                            ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : const Text(
+                          'Signup',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontFamily: 'Montserrat',
+                          ),
+                        ),
                       ),
                     ),
+
+
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
